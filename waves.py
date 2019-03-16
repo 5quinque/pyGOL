@@ -60,6 +60,7 @@ class GameOfLife:
             time.sleep(.05)
 
     def printgame(self):
+        """ Print the game of life onto the terminal """
         for y in range(0, self.screen_rows):
             for x in range(0, self.screen_cols - 1):
                 c = self.board[y][x] ^ 3
@@ -121,14 +122,24 @@ class GameOfLife:
         """
 
         self.board[row][col] ^= 1
-        #c = self.board[row][col] ^ 3
-        #self.screen.addstr(row, col, '{}'.format(self.board[row][col]), curses.color_pair(c))
-        #self.screen.refresh()
 
     def countneighbour(self, row, col):
-        count = 0;
+        """ Count the number of live cells next the given cell
+        Parameters
+        ----------
+        row : int
+            y axis
+        col : int
+            x axis
+        Returns
+        -------
+        count : int
+            Number of live cells next to given cell
+        """
+        count = 0
         for y in range(row - 1, row + 2):
             for x in range(col - 1, col + 2):
+                # If the neighbouring cell isn't on screen, continue
                 if ((y | x) >> 31 or y > self.screen_rows - 1 or x > self.screen_cols - 1 or
                         (y == row and x == col)):
                     continue
@@ -155,15 +166,11 @@ class GameOfLife:
 
     def update(self):
         """ Apply the rules of life """
-        #values = []
-        #values_to_update = []
         for y in range(0, self.screen_rows):
             for x in range(0, self.screen_cols - 1):
                 count = self.countneighbour(y, x)
                 if self.board[y][x]:
-                    # x = 1 if False else 0
                     self.temp_board[y][x] = 0 if (count < 2 or count > 3) else 1
-                    #self.temp_board[y][x] = (count < 2 or count > 3) ? 0 : 1
                 elif count == 3:
                     self.temp_board[y][x] = 1
 
