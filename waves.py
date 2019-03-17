@@ -3,6 +3,7 @@
 import curses
 import time
 import copy
+import random
 
 class GameOfLife:
     """ 
@@ -48,6 +49,10 @@ class GameOfLife:
         ----------
         stdscr : 
         """
+
+        random_count = int((self.screen_rows * self.screen_cols) / 5)
+        self.addrandomlife(random_count)
+
         while self.running:
             event = self.screen.getch() 
             if event: self.handleinput(event)
@@ -175,6 +180,18 @@ class GameOfLife:
                     self.temp_board[y][x] = 1
 
         self.board = copy.deepcopy(self.temp_board)
+    
+    def addrandomlife(self, count):
+        """ Add random life to the game
+        Parameters
+        ----------
+        count : int
+            Number of cells to give life
+        """
+        for i in range(count):
+            y = random.randrange(1, self.screen_rows)
+            x = random.randrange(1, self.screen_cols)
+            self.board[y][x] = 1
 
 def main():
     game = GameOfLife()
