@@ -11,23 +11,12 @@ class GameOfLife:
     """
     def __init__(self):
         """ Create variable and set up curses"""
-        self.screen = curses.initscr()
+        #self.screen = curses.initscr()
+        #self.screen = stdscr
         # Hide the cursor
-        curses.curs_set(False)
-        curses.mousemask(True)
-        # make getch() non-blocking
-        self.screen.nodelay(True)
+        #curses.curs_set(False)
     
-        curses.start_color()
-        curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_GREEN)
-        curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_BLACK)
-
-        curses.init_pair(4, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-        curses.init_pair(5, curses.COLOR_GREEN, curses.COLOR_BLACK)
-        curses.init_pair(6, curses.COLOR_CYAN, curses.COLOR_BLACK)
-        curses.init_pair(7, curses.COLOR_BLUE, curses.COLOR_BLACK)
-        curses.init_pair(8, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
-        curses.init_pair(9, curses.COLOR_RED, curses.COLOR_BLACK)
+        #curses.start_color()
 
         self.running = True
         self.paused = False
@@ -35,6 +24,20 @@ class GameOfLife:
         self.board = []
         self.temp_board = []
 
+    def init_colours(self):
+        """ Set the colours for the game """
+        # Cell colours
+        curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_GREEN)
+        curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_BLACK)
+        # Paused text colours
+        curses.init_pair(4, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+        curses.init_pair(5, curses.COLOR_GREEN, curses.COLOR_BLACK)
+        curses.init_pair(6, curses.COLOR_CYAN, curses.COLOR_BLACK)
+        curses.init_pair(7, curses.COLOR_BLUE, curses.COLOR_BLACK)
+        curses.init_pair(8, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
+        curses.init_pair(9, curses.COLOR_RED, curses.COLOR_BLACK)
+
+    def create_board(self):
         self.screen_rows, self.screen_cols = self.screen.getmaxyx()
 
         # https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions
@@ -42,16 +45,24 @@ class GameOfLife:
             self.board.append([0 for _ in range(self.screen_cols)])
             self.temp_board.append([0 for _ in range(self.screen_cols)])
 
-    # todo - do we need stdscr? i think no
-    def main(self, stdscr):
+        # Add random life
+        random_count = int((self.screen_rows * self.screen_cols) / 5)
+        self.addrandomlife(random_count)
+
+    def main(self, screen):
         """ The main loop handling the game
         Parameters
         ----------
-        stdscr : 
+        screen : window object : represents the whole screen
         """
 
-        random_count = int((self.screen_rows * self.screen_cols) / 5)
-        self.addrandomlife(random_count)
+        self.screen = screen
+
+        curses.mousemask(True)
+        # make getch() non-blocking
+        self.screen.nodelay(True)
+        self.init_colours()
+        self.create_board()
 
         while self.running:
             event = self.screen.getch() 
@@ -63,6 +74,8 @@ class GameOfLife:
             self.screen.refresh()
             
             time.sleep(.05)
+
+        curses.endwin()
 
     def printgame(self):
         """ Print the game of life onto the terminal """
@@ -195,6 +208,7 @@ class GameOfLife:
 
 def main():
     game = GameOfLife()
+    # https://docs.python.org/3/library/curses.html#curses.wrapper
     curses.wrapper(game.main)
 
 if __name__ == "__main__":
